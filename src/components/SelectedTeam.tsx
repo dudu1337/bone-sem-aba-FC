@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { Player } from '../types';
 import PlayerCard from './PlayerCard';

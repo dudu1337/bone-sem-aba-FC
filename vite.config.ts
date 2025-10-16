@@ -10,7 +10,7 @@ export default defineConfig(({ command }) => {
 
   if (command !== 'serve') {
     // ATENÇÃO: Altere 'SEU-REPOSITORIO' para o nome exato do seu repositório no GitHub
-    config.base = '/bone-sem-aba-FC/'
+    config.base = '/SEU-REPOSITORIO/'
   }
 
   return config

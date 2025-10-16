@@ -32,7 +32,8 @@ export interface Player {
   seriesHistory: Series[]; // Changed from matchHistory
   overall: number;
   winRate: number;
-  status?: 'active' | 'banned';
+  status?: 'active' | 'banned' | 'stand-in';
+  winRateByMap: { [mapName: string]: number };
 }
 
 export interface SavedData {

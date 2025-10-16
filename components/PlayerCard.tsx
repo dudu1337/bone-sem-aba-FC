@@ -71,20 +71,19 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled,
         >
              {/* IMAGE SECTION */}
             <div 
-                className="relative h-96 w-full bg-cover bg-top" 
+                className="relative h-80 w-full bg-cover bg-top" 
                 style={{ backgroundImage: `url(${player.photoUrl})` }}
             >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 
                 <div className="relative z-10 p-3 h-full flex flex-col justify-between text-white">
-                    <div className="flex justify-between items-start">
-                        <p className={`font-black text-5xl ${overallText}`} style={textShadow}>
+                    <div className="flex justify-end items-start">
+                        <p className={`font-black text-4xl ${overallText}`} style={textShadow}>
                             {player.overall}
                         </p>
-                        <img className="w-10 h-10 object-cover rounded-full border-2 border-white/30" src="https://i.imgur.com/gB8hCgB.png" alt="Team Logo" />
                     </div>
                     <div>
-                        <h3 className={`text-2xl font-extrabold tracking-wide uppercase ${nameText}`} style={textShadow}>
+                        <h3 className={`text-xl font-extrabold tracking-wide uppercase ${nameText}`} style={textShadow}>
                             {player.name}
                         </h3>
                     </div>
@@ -96,23 +95,23 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled,
                 <div className={`flex flex-col space-y-2 text-sm ${statsTextColor}`}>
                      <div className="flex justify-between items-center">
                         <span className="opacity-80">KDA Total</span>
-                        <span className="font-bold text-base">{`${player.totalKills}/${player.totalDeaths}/${player.totalAssists}`}</span>
+                        <span className="font-bold text-sm">{`${player.totalKills}/${player.totalDeaths}/${player.totalAssists}`}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="opacity-80">K/D Ratio</span>
-                        <span className="font-bold text-base">{player.kdRatio.toFixed(2)}</span>
+                        <span className="font-bold text-sm">{player.kdRatio.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="opacity-80">Win Rate</span>
-                        <span className="font-bold text-base">{`${player.winRate}%`}</span>
+                        <span className="font-bold text-sm">{`${player.winRate}%`}</span>
                     </div>
                      <div className="flex justify-between items-center">
                         <span className="opacity-80">HS Médio</span>
-                        <span className="font-bold text-base">{`${player.avgHeadshotPercentage}%`}</span>
+                        <span className="font-bold text-sm">{`${player.avgHeadshotPercentage}%`}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="opacity-80">Última Pontuação</span>
-                        <span className={`font-bold text-base ${lastPointsText}`}>{player.lastMatchPoints.toFixed(2)}</span>
+                        <span className={`font-bold text-sm ${lastPointsText}`}>{player.lastMatchPoints.toFixed(2)}</span>
                     </div>
                 </div>
 

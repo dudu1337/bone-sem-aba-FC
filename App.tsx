@@ -11,11 +11,12 @@ import ExportModal from './components/ExportModal';
 import ExportableImage from './components/ExportableImage';
 import MatchHistory from './components/MatchHistory';
 import Collection from './components/Collection';
+import TeamDraft from './components/TeamDraft';
 
 const LOCAL_STORAGE_KEY = 'cartolaMixAbençoado';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'market' | 'history' | 'collection'>('market');
+  const [activeTab, setActiveTab] = useState<'cartola' | 'history' | 'collection' | 'draft'>('collection');
   const [selectedTeam, setSelectedTeam] = useState<Player[]>([]);
   const [patrimony, setPatrimony] = useState<number>(INITIAL_BUDGET);
   const [roundPoints, setRoundPoints] = useState<number>(0);
@@ -143,16 +144,26 @@ const App: React.FC = () => {
         {/* Tab Navigation */}
         <div className="flex justify-center border-b border-gray-700 mb-6">
           <button
-            onClick={() => setActiveTab('market')}
+            onClick={() => setActiveTab('collection')}
             className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
-              activeTab === 'market'
+              activeTab === 'collection'
                 ? 'border-b-2 border-orange-500 text-orange-400'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            Mercado
+            Coleção
           </button>
           <button
+            onClick={() => setActiveTab('draft')}
+            className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+              activeTab === 'draft'
+                ? 'border-b-2 border-orange-500 text-orange-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Bater Times
+          </button>
+           <button
             onClick={() => setActiveTab('history')}
             className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
               activeTab === 'history'
@@ -163,18 +174,39 @@ const App: React.FC = () => {
             Histórico
           </button>
            <button
-            onClick={() => setActiveTab('collection')}
+            onClick={() => setActiveTab('cartola')}
             className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
-              activeTab === 'collection'
+              activeTab === 'cartola'
                 ? 'border-b-2 border-orange-500 text-orange-400'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            Coleção
+            Cartola
           </button>
         </div>
 
-        {activeTab === 'market' && (
+        {activeTab === 'collection' && (
+            <main>
+                <h2 className="text-2xl font-bold text-gray-300 mb-4">Coleção de Jogadores</h2>
+                <Collection 
+                    players={PLAYERS_DATA}
+                    onViewDetails={handleViewDetails}
+                />
+            </main>
+        )}
+
+        {activeTab === 'draft' && (
+          <main>
+            <TeamDraft 
+              allPlayers={PLAYERS_DATA} 
+              onViewDetails={handleViewDetails} 
+            />
+          </main>
+        )}
+        
+        {activeTab === 'history' && <MatchHistory />}
+        
+        {activeTab === 'cartola' && (
           <main>
             <div className="mb-8">
               <div className="mb-4">
@@ -204,17 +236,6 @@ const App: React.FC = () => {
           </main>
         )}
 
-        {activeTab === 'history' && <MatchHistory />}
-        
-        {activeTab === 'collection' && (
-            <main>
-                <h2 className="text-2xl font-bold text-gray-300 mb-4">Coleção de Jogadores</h2>
-                <Collection 
-                    players={PLAYERS_DATA}
-                    onViewDetails={handleViewDetails}
-                />
-            </main>
-        )}
       </div>
 
       <PlayerDetailModal player={viewingPlayer} onClose={handleCloseModal} />

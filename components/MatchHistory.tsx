@@ -1,26 +1,26 @@
 import React, { useMemo, useState } from 'react';
-import { PLAYERS_DATA } from '../constants';
+import { PLAYERS_DATA, MAP_IMAGES } from '../constants';
 import { HistorySeries, MatchPlayerPerformance } from '../types';
 import ChevronDownIcon from './icons/ChevronDownIcon';
 
 const PlayerStatsTable: React.FC<{ players: MatchPlayerPerformance[] }> = ({ players }) => (
     <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
+        <table className="w-full text-sm text-left table-fixed">
             <thead className="bg-gray-700/50 text-xs text-gray-400 uppercase">
                 <tr>
                     <th className="px-4 py-2">Jogador</th>
-                    <th className="px-4 py-2 text-center">K</th>
-                    <th className="px-4 py-2 text-center">D</th>
-                    <th className="px-4 py-2 text-center">A</th>
-                    <th className="px-4 py-2 text-right">Pontos</th>
+                    <th className="px-4 py-2 text-center w-14">K</th>
+                    <th className="px-4 py-2 text-center w-14">D</th>
+                    <th className="px-4 py-2 text-center w-14">A</th>
+                    <th className="px-4 py-2 text-right w-24">Pontos</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
                 {players.map(player => (
                     <tr key={player.playerName}>
-                        <td className="px-4 py-2 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis">
                             <div className="flex items-center">
-                                <img src={player.photoUrl} alt={player.playerName} className="w-8 h-8 rounded-full object-cover mr-3" />
+                                <img src={player.photoUrl} alt={player.playerName} className="w-8 h-8 rounded-full object-cover mr-3 flex-shrink-0" />
                                 <span className="font-medium">{player.playerName}</span>
                             </div>
                         </td>
@@ -135,9 +135,16 @@ const MatchHistory: React.FC = () => {
                         {expandedSeriesTitle === series.title && (
                             <div className="p-4 bg-black/20 space-y-6">
                                 {series.matches.map(match => (
-                                    <div key={`${series.title}-${match.map}`} className="bg-gray-800 rounded-lg p-4">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <p className="font-bold text-lg">{match.map}</p>
+                                    <div key={`${series.title}-${match.map}`} className="bg-gray-800 rounded-lg overflow-hidden">
+                                        <div className="flex items-center justify-between p-3 bg-gray-700/80">
+                                            <div className="flex items-center gap-4">
+                                                <img 
+                                                    src={MAP_IMAGES[match.map]} 
+                                                    alt={match.map} 
+                                                    className="w-16 h-auto rounded-md"
+                                                />
+                                                <p className="font-bold text-xl text-white uppercase tracking-wider">{match.map}</p>
+                                            </div>
                                             <p className="font-bold text-2xl">
                                                 <span className="text-green-400">{match.winningScore}</span>
                                                 <span className="text-gray-500 mx-2">vs</span>
@@ -145,7 +152,7 @@ const MatchHistory: React.FC = () => {
                                             </p>
                                         </div>
                                         
-                                        <div className="space-y-4">
+                                        <div className="space-y-4 p-4">
                                             <div>
                                                 <h4 className="text-md font-semibold text-green-400 mb-2">Vencedores</h4>
                                                 <PlayerStatsTable players={match.winningTeamPlayers} />
