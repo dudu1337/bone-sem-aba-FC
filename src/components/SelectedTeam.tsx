@@ -10,7 +10,7 @@ interface SelectedTeamProps {
 }
 
 const PlaceholderSlot: React.FC = () => (
-    <div className="flex-shrink-0 w-72 h-[540px] bg-gray-800/50 border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center text-gray-500 text-center p-2">
+    <div className="flex-shrink-0 w-64 h-[500px] bg-gray-800/50 border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center text-gray-500 text-center p-2">
        <span className="text-sm">Vaga</span>
        <span className="text-5xl font-bold">+</span>
     </div>
@@ -19,7 +19,7 @@ const PlaceholderSlot: React.FC = () => (
 const SelectedTeam: React.FC<SelectedTeamProps> = ({ team, onSelectPlayer, onViewDetails, onExportClick }) => {
   const slots = 5;
   const filledSlots = team.map(player => (
-    <div key={player.id} className="flex-shrink-0 w-72">
+    <div key={player.id} className="flex-shrink-0 w-64">
       <PlayerCard 
         player={player}
         isSelected={true}

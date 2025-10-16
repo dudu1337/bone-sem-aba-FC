@@ -172,7 +172,7 @@ const playersRawData = {
         ]},
         { title: 'Serie 1 - TIM1 0 X 2 BAINheira - 15/10/25', matches: [
             { map: 'Mirage', kills: 4, deaths: 17, assists: 4, hs: 50, won: false, teamScore: 4, enemyScore: 13 },
-            { map: 'Inferno', kills: 7, deaths: 18, assists: 5, hs: 42, won: false, teamScore: 4, enemyScore: 13 }
+            { map: 'Inferno', kills: 7, deaths: 16, assists: 5, hs: 42, won: false, teamScore: 4, enemyScore: 13 }
         ]},
         { title: 'Serie 2 - TIME HENRIQUE 1 X 1 TIME MIR - 15/10/25', matches: [
             { map: 'Dust II', kills: 8, deaths: 22, assists: 8, hs: 37, won: true, teamScore: 13, enemyScore: 11 },
@@ -187,7 +187,7 @@ const playersRawData = {
         ]},
         { title: 'Serie 1 - TIM1 0 X 2 BAINheira - 15/10/25', matches: [
             { map: 'Mirage', kills: 18, deaths: 14, assists: 7, hs: 60, won: false, teamScore: 4, enemyScore: 13 },
-            { map: 'Inferno', kills: 13, deaths: 15, assists: 2, hs: 60, won: false, teamScore: 4, enemyScore: 13 }
+            { map: 'Inferno', kills: 15, deaths: 17, assists: 2, hs: 60, won: false, teamScore: 4, enemyScore: 13 }
         ]},
         { title: 'Serie 2 - TIME HENRIQUE 1 X 1 TIME MIR - 15/10/25', matches: [
             { map: 'Dust II', kills: 33, deaths: 18, assists: 7, hs: 39, won: false, teamScore: 11, enemyScore: 13 },
@@ -216,7 +216,7 @@ const playersRawData = {
         ]},
         { title: 'Serie 1 - TIM1 0 X 2 BAINheira - 15/10/25', matches: [
             { map: 'Mirage', kills: 7, deaths: 15, assists: 1, hs: 85, won: false, teamScore: 4, enemyScore: 13 },
-            { map: 'Inferno', kills: 14, deaths: 14, assists: 3, hs: 85, won: false, teamScore: 4, enemyScore: 13 }
+            { map: 'Inferno', kills: 7, deaths: 14, assists: 3, hs: 85, won: false, teamScore: 4, enemyScore: 13 }
         ]},
         { title: 'Serie 2 - TIME HENRIQUE 1 X 1 TIME MIR - 15/10/25', matches: [
             { map: 'Dust II', kills: 16, deaths: 18, assists: 4, hs: 62, won: false, teamScore: 11, enemyScore: 13 },
@@ -246,7 +246,7 @@ const playersRawData = {
         ]},
         { title: 'Serie 1 - TIM1 0 X 2 BAINheira - 15/10/25', matches: [
             { map: 'Mirage', kills: 6, deaths: 17, assists: 2, hs: 66, won: false, teamScore: 4, enemyScore: 13 },
-            { map: 'Inferno', kills: 6, deaths: 16, assists: 3, hs: 0, won: false, teamScore: 4, enemyScore: 13 }
+            { map: 'Inferno', kills: 5, deaths: 16, assists: 3, hs: 0, won: false, teamScore: 4, enemyScore: 13 }
         ]},
         { title: 'Serie 2 - TIME HENRIQUE 1 X 1 TIME MIR - 15/10/25', matches: [
             { map: 'Dust II', kills: 8, deaths: 18, assists: 4, hs: 50, won: false, teamScore: 11, enemyScore: 13 },

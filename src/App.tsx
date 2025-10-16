@@ -11,11 +11,12 @@ import ExportModal from './components/ExportModal';
 import ExportableImage from './components/ExportableImage';
 import MatchHistory from './components/MatchHistory';
 import Collection from './components/Collection';
+import TeamDraft from './components/TeamDraft';
 
 const LOCAL_STORAGE_KEY = 'cartolaMixAbençoado';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'market' | 'history' | 'collection'>('market');
+  const [activeTab, setActiveTab] = useState<'market' | 'history' | 'collection' | 'draft'>('market');
   const [selectedTeam, setSelectedTeam] = useState<Player[]>([]);
   const [patrimony, setPatrimony] = useState<number>(INITIAL_BUDGET);
   const [roundPoints, setRoundPoints] = useState<number>(0);
@@ -172,6 +173,16 @@ const App: React.FC = () => {
           >
             Coleção
           </button>
+           <button
+            onClick={() => setActiveTab('draft')}
+            className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+              activeTab === 'draft'
+                ? 'border-b-2 border-orange-500 text-orange-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Bater Times
+          </button>
         </div>
 
         {activeTab === 'market' && (
@@ -214,6 +225,15 @@ const App: React.FC = () => {
                     onViewDetails={handleViewDetails}
                 />
             </main>
+        )}
+
+        {activeTab === 'draft' && (
+          <main>
+            <TeamDraft 
+              allPlayers={PLAYERS_DATA} 
+              onViewDetails={handleViewDetails} 
+            />
+          </main>
         )}
       </div>
 

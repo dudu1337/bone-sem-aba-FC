@@ -14,7 +14,7 @@ interface ExportableImageProps {
 
 // Placeholder para slots vazios na imagem
 const ExportPlaceholderSlot: React.FC = () => (
-    <div className="h-[540px] bg-gray-800/50 border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center text-gray-500 text-center p-2">
+    <div className="h-[500px] bg-gray-800/50 border-2 border-dashed border-gray-600 rounded-2xl flex flex-col items-center justify-center text-gray-500 text-center p-2">
        <span className="text-sm">Vaga</span>
        <span className="text-5xl font-bold">+</span>
     </div>
@@ -40,7 +40,7 @@ const ExportableImage = forwardRef<HTMLDivElement, ExportableImageProps>(
 
 
     return (
-      <div ref={ref} className="bg-black text-gray-100 p-6" style={{ width: '1504px' }}>
+      <div ref={ref} className="bg-black text-gray-100 p-6" style={{ width: '1344px' }}>
         <h1 className="text-center text-4xl font-bold text-orange-400 tracking-wider mb-4" style={{ fontFamily: 'monospace' }}>
           {title}
         </h1>
