@@ -187,7 +187,7 @@ const playersRawData = {
         ]},
         { title: 'Serie 1 - TIM1 0 X 2 BAINheira - 15/10/25', matches: [
             { map: 'Mirage', kills: 18, deaths: 14, assists: 7, hs: 60, won: false, teamScore: 4, enemyScore: 13 },
-            { map: 'Inferno', kills: 15, deaths: 17, assists: 2, hs: 60, won: false, teamScore: 4, enemyScore: 13 }
+            { map: 'Inferno', kills: 15, deaths: 17, assists: 2, hs: 80, won: false, teamScore: 4, enemyScore: 13 }
         ]},
         { title: 'Serie 2 - TIME HENRIQUE 1 X 1 TIME MIR - 15/10/25', matches: [
             { map: 'Dust II', kills: 33, deaths: 18, assists: 7, hs: 39, won: false, teamScore: 11, enemyScore: 13 },
@@ -283,7 +283,7 @@ const playersRawData = {
 
 export const PLAYERS_DATA: Player[] = [
     createPlayerFromSeriesHistory({ id: 4, name: "Mad", photoUrl: `https://i.imgur.com/1VvakVK.png`, team: "Time A", overall: 88 }, playersRawData.Mad),
-    createPlayerFromSeriesHistory({ id: 2, name: "Mestre40", photoUrl: `https://i.imgur.com/q3w7MPO.png`, team: "Time A", overall: 78 }, playersRawData.Mestre40),
+    createPlayerFromSeriesHistory({ id: 2, name: "Mestre40", photoUrl: `https://i.imgur.com/0LUAmao.png`, team: "Time A", overall: 78 }, playersRawData.Mestre40),
     createPlayerFromSeriesHistory({ id: 1, name: "Pereira", photoUrl: `https://i.imgur.com/Zt3H0I2.png`, team: "Time A", overall: 79 }, playersRawData.Pereira),
     createPlayerFromSeriesHistory({ id: 3, name: "MIRZERA", photoUrl: `https://i.imgur.com/Pi935ZY.png`, team: "Time A", overall: 85 }, playersRawData.MIRZERA),
     createPlayerFromSeriesHistory({ id: 5, name: "oBruxo", photoUrl: `https://i.imgur.com/UsUpz6M.png`, team: "Time A", overall: 68 }, playersRawData.oBruxo),

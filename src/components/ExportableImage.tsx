@@ -1,3 +1,6 @@
+
+
+
 import React, { forwardRef } from 'react';
 import { Player } from '../types';
 import TeamStatus from './TeamStatus';
