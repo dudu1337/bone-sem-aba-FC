@@ -52,6 +52,13 @@ const getTierStyles = (overall: number, status?: string) => {
     };
 }
 
+const getStatsImageUrl = (overall: number): string => {
+    if (overall >= 90) return 'https://i.imgur.com/fHmj94z.png';
+    if (overall >= 80) return 'https://i.imgur.com/VBBCDG1.png';
+    if (overall >= 70) return 'https://i.imgur.com/tgiR8xs.png';
+    return 'https://i.imgur.com/uDFMp8x.png';
+};
+
 const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled, onSelect, onViewDetails, isExportView = false, hideActions = false }) => {
     
     const handleSelectClick = (e: React.MouseEvent) => {
@@ -61,6 +68,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled,
 
     const { statsStyle, overallText, nameText, lastPointsText, statsTextColor } = getTierStyles(player.overall, player.status);
     const textShadow = { textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' };
+    const statsImageUrl = getStatsImageUrl(player.overall);
 
     return (
         <div 
@@ -91,7 +99,14 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled,
             </div>
 
             {/* STATS & BUTTON SECTION */}
-            <div style={statsStyle} className="p-4 flex-grow flex flex-col justify-between">
+            <div style={{
+                    ...statsStyle,
+                    backgroundImage: `url(${statsImageUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }} 
+                className="p-4 flex-grow flex flex-col justify-between"
+            >
                 <div className={`flex flex-col space-y-2 text-sm ${statsTextColor}`}>
                      <div className="flex justify-between items-center">
                         <span className="opacity-80">KDA Total</span>

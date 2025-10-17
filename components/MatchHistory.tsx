@@ -2,38 +2,52 @@ import React, { useMemo, useState } from 'react';
 import { PLAYERS_DATA, MAP_IMAGES } from '../constants';
 import { HistorySeries, MatchPlayerPerformance } from '../types';
 import ChevronDownIcon from './icons/ChevronDownIcon';
+import StarIcon from './icons/StarIcon';
 
-const PlayerStatsTable: React.FC<{ players: MatchPlayerPerformance[] }> = ({ players }) => (
-    <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left table-fixed">
-            <thead className="bg-gray-700/50 text-xs text-gray-400 uppercase">
-                <tr>
-                    <th className="px-4 py-2">Jogador</th>
-                    <th className="px-4 py-2 text-center w-14">K</th>
-                    <th className="px-4 py-2 text-center w-14">D</th>
-                    <th className="px-4 py-2 text-center w-14">A</th>
-                    <th className="px-4 py-2 text-right w-24">Pontos</th>
-                </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
+// New component for displaying a single team's performance
+interface TeamPerformanceCardProps {
+    title: string;
+    players: MatchPlayerPerformance[];
+    teamColor: 'green' | 'red';
+}
+
+const TeamPerformanceCard: React.FC<TeamPerformanceCardProps> = ({ title, players, teamColor }) => {
+    const titleColor = teamColor === 'green' ? 'text-green-400' : 'text-red-400';
+    const borderColor = teamColor === 'green' ? 'border-green-500/30' : 'border-red-500/30';
+
+    return (
+        <div className={`bg-gray-900/50 rounded-lg p-3 border ${borderColor}`}>
+            <h4 className={`text-lg font-semibold mb-3 text-center ${titleColor}`}>{title}</h4>
+            <div className="space-y-1">
+                {/* Header */}
+                <div className="grid grid-cols-12 gap-2 text-xs text-gray-400 px-2">
+                    <span className="col-span-6">Jogador</span>
+                    <span className="col-span-2 text-center">KDA</span>
+                    <span className="col-span-4 text-right">Pontos</span>
+                </div>
+                {/* Player List */}
                 {players.map(player => (
-                    <tr key={player.playerName}>
-                        <td className="px-4 py-2 whitespace-nowrap overflow-hidden text-ellipsis">
-                            <div className="flex items-center">
-                                <img src={player.photoUrl} alt={player.playerName} className="w-8 h-8 rounded-full object-cover mr-3 flex-shrink-0" />
-                                <span className="font-medium">{player.playerName}</span>
-                            </div>
-                        </td>
-                        <td className="px-4 py-2 text-center">{player.kills}</td>
-                        <td className="px-4 py-2 text-center">{player.deaths}</td>
-                        <td className="px-4 py-2 text-center">{player.assists}</td>
-                        <td className="px-4 py-2 text-right font-bold text-orange-400">{player.points.toFixed(2)}</td>
-                    </tr>
+                    <div 
+                        key={player.playerName}
+                        className={`grid grid-cols-12 gap-2 items-center p-2 rounded-md transition-colors ${player.isMvp ? 'bg-orange-500/20' : 'bg-gray-800/60'}`}
+                    >
+                        <div className="col-span-6 flex items-center whitespace-nowrap overflow-hidden">
+                            <img src={player.photoUrl} alt={player.playerName} className="w-7 h-7 rounded-full object-cover mr-2 flex-shrink-0" />
+                            <span className="font-medium text-sm text-ellipsis overflow-hidden">{player.playerName}</span>
+                        </div>
+                        <div className="col-span-2 text-center text-xs text-gray-300">
+                           {`${player.kills}/${player.deaths}/${player.assists}`}
+                        </div>
+                        <div className="col-span-4 text-right font-bold text-lg flex items-center justify-end">
+                            {player.isMvp && <StarIcon className="w-4 h-4 text-yellow-400 mr-1.5" />}
+                            <span className="text-orange-400">{player.points.toFixed(2)}</span>
+                        </div>
+                    </div>
                 ))}
-            </tbody>
-        </table>
-    </div>
-);
+            </div>
+        </div>
+    );
+};
 
 
 const MatchHistory: React.FC = () => {
@@ -42,64 +56,77 @@ const MatchHistory: React.FC = () => {
     const processedHistory = useMemo((): HistorySeries[] => {
         const seriesMap = new Map<string, HistorySeries>();
 
+        // Step 1: Aggregate all match data from all players
         for (const player of PLAYERS_DATA) {
             for (const series of player.seriesHistory) {
                 if (!seriesMap.has(series.title)) {
-                     const uniqueMatches = new Map();
-                     series.matches.forEach(m => {
-                         // Use a key that uniquely identifies a match within a series title
-                         const matchKey = `${m.map}-${Math.max(m.team1Score, m.team2Score)}-${Math.min(m.team1Score, m.team2Score)}`;
-                         if (!uniqueMatches.has(matchKey)) {
-                             uniqueMatches.set(matchKey, {
-                                 id: m.id,
-                                 map: m.map,
-                                 winningScore: Math.max(m.team1Score, m.team2Score),
-                                 losingScore: Math.min(m.team1Score, m.team2Score),
-                                 winningTeamPlayers: [],
-                                 losingTeamPlayers: [],
-                             });
-                         }
-                     });
-
                     seriesMap.set(series.title, {
                         title: series.title,
-                        matches: Array.from(uniqueMatches.values()),
+                        matches: [],
                     });
                 }
-
                 const historySeries = seriesMap.get(series.title)!;
 
                 for (const match of series.matches) {
                     const winningScore = Math.max(match.team1Score, match.team2Score);
                     const losingScore = Math.min(match.team1Score, match.team2Score);
-                    const historyMatch = historySeries.matches.find(hm => hm.map === match.map && hm.winningScore === winningScore && hm.losingScore === losingScore);
+                    
+                    let historyMatch = historySeries.matches.find(hm => 
+                        hm.map === match.map && 
+                        hm.winningScore === winningScore && 
+                        hm.losingScore === losingScore
+                    );
 
-                    if (historyMatch) {
-                        const performanceData = {
-                            playerName: player.name,
-                            photoUrl: player.photoUrl,
-                            kills: match.kills,
-                            deaths: match.deaths,
-                            assists: match.assists,
-                            points: match.points,
+                    if (!historyMatch) {
+                        historyMatch = {
+                            id: match.id,
+                            map: match.map,
+                            winningScore: winningScore,
+                            losingScore: losingScore,
+                            winningTeamPlayers: [],
+                            losingTeamPlayers: [],
                         };
-                        
-                        if (match.won) {
-                            historyMatch.winningTeamPlayers.push(performanceData);
-                        } else {
-                            historyMatch.losingTeamPlayers.push(performanceData);
-                        }
+                        historySeries.matches.push(historyMatch);
+                    }
 
-                        // Sort after every push might be inefficient but ensures order
-                        historyMatch.winningTeamPlayers.sort((a, b) => b.points - a.points);
-                        historyMatch.losingTeamPlayers.sort((a, b) => b.points - a.points);
+                    const performanceData: MatchPlayerPerformance = {
+                        playerName: player.name,
+                        photoUrl: player.photoUrl,
+                        kills: match.kills,
+                        deaths: match.deaths,
+                        assists: match.assists,
+                        points: match.points,
+                    };
+                    
+                    const teamList = match.won ? historyMatch.winningTeamPlayers : historyMatch.losingTeamPlayers;
+                    if (!teamList.some(p => p.playerName === player.name)) {
+                        teamList.push(performanceData);
                     }
                 }
             }
         }
         
+        // Step 2: Post-process to sort players and find MVP for each match
+        seriesMap.forEach(series => {
+            series.matches.forEach(match => {
+                match.winningTeamPlayers.sort((a, b) => b.points - a.points);
+                match.losingTeamPlayers.sort((a, b) => b.points - a.points);
+
+                const allPlayersInMatch = [...match.winningTeamPlayers, ...match.losingTeamPlayers];
+                if (allPlayersInMatch.length > 0) {
+                    const mvp = allPlayersInMatch.reduce((max, p) => p.points > max.points ? p : max, allPlayersInMatch[0]);
+                    
+                    const playerToMark = allPlayersInMatch.find(p => p.playerName === mvp.playerName);
+                    if (playerToMark) {
+                        playerToMark.isMvp = true;
+                    }
+                }
+            });
+        });
+
         const result = Array.from(seriesMap.values());
 
+        // Step 3: Sort series by date (most recent first)
         result.sort((a, b) => {
             const dateAStr = a.title.split(' - ').pop()?.trim();
             const dateBStr = b.title.split(' - ').pop()?.trim();
@@ -109,6 +136,10 @@ const MatchHistory: React.FC = () => {
             const dateA = `20${yearA}${monthA}${dayA}`;
             const dateB = `20${yearB}${monthB}${dayB}`;
             return dateB.localeCompare(dateA);
+        });
+        
+        result.forEach(series => {
+            series.matches.sort((a,b) => a.map.localeCompare(b.map));
         });
 
         return result;
@@ -135,32 +166,28 @@ const MatchHistory: React.FC = () => {
                         {expandedSeriesTitle === series.title && (
                             <div className="p-4 bg-black/20 space-y-6">
                                 {series.matches.map(match => (
-                                    <div key={`${series.title}-${match.map}`} className="bg-gray-800 rounded-lg overflow-hidden">
-                                        <div className="flex items-center justify-between p-3 bg-gray-700/80">
-                                            <div className="flex items-center gap-4">
+                                    <div key={`${series.title}-${match.map}`} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
+                                         <div className="bg-gray-700/50 flex items-center justify-between p-3">
+                                            <div className="flex items-center gap-3">
                                                 <img 
                                                     src={MAP_IMAGES[match.map]} 
-                                                    alt={match.map} 
-                                                    className="w-16 h-auto rounded-md"
+                                                    alt={match.map}
+                                                    className="w-10 h-10 object-cover rounded-md"
                                                 />
-                                                <p className="font-bold text-xl text-white uppercase tracking-wider">{match.map}</p>
+                                                <p className="font-bold text-xl text-white uppercase tracking-wider">
+                                                    {match.map}
+                                                </p>
                                             </div>
-                                            <p className="font-bold text-2xl">
+                                            <p className="font-black text-2xl">
                                                 <span className="text-green-400">{match.winningScore}</span>
-                                                <span className="text-gray-500 mx-2">vs</span>
+                                                <span className="text-gray-500 mx-2">-</span>
                                                 <span className="text-red-400">{match.losingScore}</span>
                                             </p>
                                         </div>
                                         
-                                        <div className="space-y-4 p-4">
-                                            <div>
-                                                <h4 className="text-md font-semibold text-green-400 mb-2">Vencedores</h4>
-                                                <PlayerStatsTable players={match.winningTeamPlayers} />
-                                            </div>
-                                            <div>
-                                                <h4 className="text-md font-semibold text-red-400 mb-2">Perdedores</h4>
-                                                <PlayerStatsTable players={match.losingTeamPlayers} />
-                                            </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                                            <TeamPerformanceCard title="Vitória" players={match.winningTeamPlayers} teamColor="green" />
+                                            <TeamPerformanceCard title="Derrota" players={match.losingTeamPlayers} teamColor="red" />
                                         </div>
                                     </div>
                                 ))}

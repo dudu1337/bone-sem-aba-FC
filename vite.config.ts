@@ -9,7 +9,7 @@ export default defineConfig(({ command }) => {
   }
 
   if (command !== 'serve') {
-    config.base = '/cartola-mix-abencoado/'
+    config.base = '/bone-sem-aba-FC/'
   }
 
   return config

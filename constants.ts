@@ -1,4 +1,4 @@
-import { Player, Match, Series } from './types';
+import { Player, Match, Series, RatingHistory } from './types';
 
 export const INITIAL_BUDGET = 50.0;
 
@@ -33,9 +33,23 @@ interface RawSeriesData {
   matches: RawMatchData[];
 }
 
+// Dados de rating históricos para simulação
+const originalOveralls: { [key: string]: number } = {
+    Mad: 88, Mestre40: 79, Pereira: 79, MIRZERA: 85, oBruxo: 69, moreno: 91,
+    RAFARINHA: 92, HnRq: 84, Mateuus: 85, heroo: 70, Pedrones: 92, Lucas: 78,
+    vice: 82, Bernabe: 72, VDD: 82, Hiagod: 78, "Ratão": 73, Pimentel: 74,
+    a1: 76, "ROB #AMGJESUS": 77,
+};
+
+const overalls1510: { [key: string]: number } = {
+    Mad: 89, Mestre40: 78, Pereira: 84, MIRZERA: 87, oBruxo: 68, moreno: 90,
+     HnRq: 84, Mateuus: 86, heroo: 68, Bernabe: 65,
+};
+
+
 // Helper para criar um jogador completo a partir do seu histórico de séries
 const createPlayerFromSeriesHistory = (
-    baseData: Omit<Player, 'price' | 'lastMatchPoints' | 'seriesHistory' | 'totalKills' | 'totalDeaths' | 'totalAssists' | 'avgHeadshotPercentage' | 'winRate' | 'kdRatio' | 'winRateByMap'>,
+    baseData: Omit<Player, 'price' | 'lastMatchPoints' | 'seriesHistory' | 'totalKills' | 'totalDeaths' | 'totalAssists' | 'avgHeadshotPercentage' | 'winRate' | 'kdRatio' | 'winRateByMap' | 'ratingHistory'>,
     seriesData: RawSeriesData[]
 ): Player => {
     // Ordena as séries por data (assumindo que o título contém a data no formato DD/MM/AA)
@@ -115,6 +129,20 @@ const createPlayerFromSeriesHistory = (
     const kdBonus = (kdRatio - 1.0) * 1.5;
     let price = basePrice + overallBonus + recentPerformanceBonus + kdBonus;
     price = Math.max(5.0, Math.min(20.0, price)); // Garante que o preço fique entre 5.0 e 20.0
+    
+    // Geração do histórico de ratings
+    const currentOverall = baseData.overall;
+    const originalOverall = originalOveralls[baseData.name] ?? currentOverall - 3; // Fallback
+    const rating1510 = overalls1510[baseData.name];
+
+    const ratingHistory: RatingHistory[] = [];
+    ratingHistory.push({ date: 'Original', overall: originalOverall });
+    if (rating1510 && rating1510 !== originalOverall) {
+        ratingHistory.push({ date: '15/10', overall: rating1510 });
+    }
+    if (currentOverall !== (rating1510 ?? originalOverall)) {
+        ratingHistory.push({ date: '16/10', overall: currentOverall });
+    }
 
     return {
         ...baseData,
@@ -129,6 +157,7 @@ const createPlayerFromSeriesHistory = (
         lastMatchPoints,
         seriesHistory: seriesHistory.reverse(), // Mostra a série mais recente primeiro
         winRateByMap,
+        ratingHistory,
     };
 };
 
@@ -151,6 +180,11 @@ const playersRawData = {
         ]}
     ],
     Mestre40: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 9, deaths: 25, assists: 5, hs: 55, won: false, teamScore: 13, enemyScore: 16 },
+            { map: 'Overpass', kills: 16, deaths: 13, assists: 5, hs: 50, won: true, teamScore: 13, enemyScore: 7 },
+            { map: 'Inferno', kills: 6, deaths: 15, assists: 3, hs: 33, won: false, teamScore: 3, enemyScore: 13 }
+        ]},
          { title: 'G12 ANINHOS 2 X 1 BIg FESTINHA - 13/10/25', matches: [
             { map: 'Train', kills: 4, deaths: 9, assists: 4, hs: 25, won: true, teamScore: 13, enemyScore: 3 },
             { map: 'Overpass', kills: 14, deaths: 17, assists: 5, hs: 64, won: false, teamScore: 9, enemyScore: 13 },
@@ -170,6 +204,11 @@ const playersRawData = {
         ]}
     ],
     Pereira: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 33, deaths: 16, assists: 4, hs: 33, won: true, teamScore: 16, enemyScore: 13 },
+            { map: 'Overpass', kills: 15, deaths: 16, assists: 4, hs: 20, won: false, teamScore: 7, enemyScore: 13 },
+            { map: 'Inferno', kills: 15, deaths: 6, assists: 3, hs: 40, won: true, teamScore: 13, enemyScore: 3 }
+        ]},
          { title: 'TIME PEREIRA 8 X 13 TIME LUCAS - 05/10/25', matches: [
             { map: 'Overpass', kills: 21, deaths: 16, assists: 7, hs: 33, won: false, teamScore: 8, enemyScore: 13 },
         ]},
@@ -209,6 +248,11 @@ const playersRawData = {
         ]}
     ],
     oBruxo: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 14, deaths: 23, assists: 3, hs: 42, won: true, teamScore: 16, enemyScore: 13 },
+            { map: 'Overpass', kills: 4, deaths: 19, assists: 5, hs: 50, won: false, teamScore: 7, enemyScore: 13 },
+            { map: 'Inferno', kills: 10, deaths: 10, assists: 4, hs: 10, won: true, teamScore: 13, enemyScore: 3 }
+        ]},
         { title: 'TIME PEREIRA 8 X 13 TIME LUCAS - 05/10/25', matches: [
             { map: 'Overpass', kills: 10, deaths: 17, assists: 4, hs: 10, won: false, teamScore: 8, enemyScore: 13 },
         ]},
@@ -227,6 +271,11 @@ const playersRawData = {
         ]}
     ],
     moreno: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 21, deaths: 23, assists: 2, hs: 33, won: false, teamScore: 13, enemyScore: 16 },
+            { map: 'Overpass', kills: 20, deaths: 14, assists: 3, hs: 50, won: true, teamScore: 13, enemyScore: 7 },
+            { map: 'Inferno', kills: 14, deaths: 14, assists: 3, hs: 50, won: false, teamScore: 3, enemyScore: 13 }
+        ]},
         { title: 'G12 ANINHOS 2 X 1 BIg FESTINHA - 13/10/25', matches: [
             { map: 'Train', kills: 21, deaths: 6, assists: 5, hs: 52, won: true, teamScore: 13, enemyScore: 3 },
             { map: 'Overpass', kills: 19, deaths: 18, assists: 5, hs: 37, won: false, teamScore: 9, enemyScore: 13 },
@@ -247,6 +296,11 @@ const playersRawData = {
         ]}
     ],
     RAFARINHA: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 28, deaths: 23, assists: 3, hs: 57, won: false, teamScore: 13, enemyScore: 16 },
+            { map: 'Overpass', kills: 21, deaths: 15, assists: 5, hs: 47, won: true, teamScore: 13, enemyScore: 7 },
+            { map: 'Inferno', kills: 6, deaths: 15, assists: 1, hs: 33, won: false, teamScore: 3, enemyScore: 13 }
+        ]},
         { title: 'TIME PEREIRA 8 X 13 TIME LUCAS - 05/10/25', matches: [
             { map: 'Overpass', kills: 18, deaths: 16, assists: 5, hs: 28, won: true, teamScore: 13, enemyScore: 8 },
         ]},
@@ -269,6 +323,11 @@ const playersRawData = {
         ]}
     ],
     HnRq: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 38, deaths: 17, assists: 0, hs: 60, won: true, teamScore: 16, enemyScore: 13 },
+            { map: 'Overpass', kills: 10, deaths: 13, assists: 3, hs: 60, won: false, teamScore: 7, enemyScore: 13 },
+            { map: 'Inferno', kills: 18, deaths: 7, assists: 4, hs: 72, won: true, teamScore: 13, enemyScore: 3 }
+        ]},
         { title: 'G12 ANINHOS 2 X 1 BIg FESTINHA - 13/10/25', matches: [
             { map: 'Train', kills: 12, deaths: 15, assists: 2, hs: 83, won: false, teamScore: 3, enemyScore: 13 },
             { map: 'Overpass', kills: 19, deaths: 14, assists: 5, hs: 53, won: true, teamScore: 13, enemyScore: 9 },
@@ -284,6 +343,11 @@ const playersRawData = {
         ]}
     ],
     Mateuus: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 34, deaths: 20, assists: 3, hs: 38, won: false, teamScore: 13, enemyScore: 16 },
+            { map: 'Overpass', kills: 13, deaths: 10, assists: 7, hs: 23, won: true, teamScore: 13, enemyScore: 7 },
+            { map: 'Inferno', kills: 7, deaths: 14, assists: 5, hs: 100, won: false, teamScore: 3, enemyScore: 13 }
+        ]},
          { title: 'TIME PEREIRA 8 X 13 TIME LUCAS - 05/10/25', matches: [
             { map: 'Overpass', kills: 17, deaths: 16, assists: 3, hs: 53, won: true, teamScore: 13, enemyScore: 8 },
         ]},
@@ -307,6 +371,11 @@ const playersRawData = {
         ]}
     ],
     heroo: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 10, deaths: 22, assists: 2, hs: 40, won: true, teamScore: 16, enemyScore: 13 },
+            { map: 'Overpass', kills: 17, deaths: 17, assists: 3, hs: 52, won: false, teamScore: 7, enemyScore: 13 },
+            { map: 'Inferno', kills: 9, deaths: 7, assists: 1, hs: 77, won: true, teamScore: 13, enemyScore: 3 }
+        ]},
         { title: 'G12 ANINHOS 2 X 1 BIg FESTINHA - 13/10/25', matches: [
             { map: 'Train', kills: 12, deaths: 9, assists: 2, hs: 67, won: true, teamScore: 13, enemyScore: 3 },
             { map: 'Overpass', kills: 8, deaths: 19, assists: 2, hs: 63, won: false, teamScore: 9, enemyScore: 13 },
@@ -348,6 +417,11 @@ const playersRawData = {
         ]}
     ],
     Bernabe: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 8, deaths: 22, assists: 1, hs: 12, won: false, teamScore: 13, enemyScore: 16 },
+            { map: 'Overpass', kills: 11, deaths: 13, assists: 5, hs: 18, won: true, teamScore: 13, enemyScore: 7 },
+            { map: 'Inferno', kills: 6, deaths: 14, assists: 1, hs: 33, won: false, teamScore: 3, enemyScore: 13 }
+        ]},
          { title: 'G12 ANINHOS 2 X 1 BIg FESTINHA - 13/10/25', matches: [
             { map: 'Train', kills: 2, deaths: 14, assists: 2, hs: 50, won: false, teamScore: 3, enemyScore: 13 },
             { map: 'Overpass', kills: 17, deaths: 15, assists: 8, hs: 29, won: true, teamScore: 13, enemyScore: 9 },
@@ -360,6 +434,11 @@ const playersRawData = {
         ]}
     ],
     VDD: [
+        { title: 'Serie Antiga - TEAM HNRQ 2 X 1 TEAM MATEUS - 14/10/25', matches: [
+            { map: 'Mirage', kills: 17, deaths: 22, assists: 8, hs: 17, won: true, teamScore: 16, enemyScore: 13 },
+            { map: 'Overpass', kills: 19, deaths: 16, assists: 2, hs: 21, won: false, teamScore: 7, enemyScore: 13 },
+            { map: 'Inferno', kills: 18, deaths: 9, assists: 10, hs: 33, won: true, teamScore: 13, enemyScore: 3 }
+        ]},
         { title: 'TIME PEREIRA 8 X 13 TIME LUCAS - 05/10/25', matches: [
             { map: 'Overpass', kills: 18, deaths: 16, assists: 5, hs: 28, won: true, teamScore: 13, enemyScore: 8 },
         ]},
@@ -395,21 +474,21 @@ const playersRawData = {
 
 export const PLAYERS_DATA: Player[] = [
     createPlayerFromSeriesHistory({ id: 4, name: "Mad", photoUrl: `https://i.imgur.com/1VvakVK.png`, team: "Time A", overall: 92 }, playersRawData.Mad),
-    createPlayerFromSeriesHistory({ id: 2, name: "Mestre40", photoUrl: `https://i.imgur.com/q3w7MPO.png`, team: "Time A", overall: 77 }, playersRawData.Mestre40),
-    createPlayerFromSeriesHistory({ id: 1, name: "Pereira", photoUrl: `https://i.imgur.com/a1Peapx.png`, team: "Time A", overall: 88 }, playersRawData.Pereira),
+    createPlayerFromSeriesHistory({ id: 2, name: "Mestre40", photoUrl: `https://i.imgur.com/q3w7MPO.png`, team: "Time A", overall: 78 }, playersRawData.Mestre40),
+    createPlayerFromSeriesHistory({ id: 1, name: "Pereira", photoUrl: `https://i.imgur.com/a1Peapx.png`, team: "Time A", overall: 89 }, playersRawData.Pereira),
     createPlayerFromSeriesHistory({ id: 3, name: "MIRZERA", photoUrl: `https://i.imgur.com/Pi935ZY.png`, team: "Time A", overall: 88 }, playersRawData.MIRZERA),
     createPlayerFromSeriesHistory({ id: 5, name: "oBruxo", photoUrl: `https://i.imgur.com/UsUpz6M.png`, team: "Time A", overall: 68 }, playersRawData.oBruxo),
     createPlayerFromSeriesHistory({ id: 6, name: "moreno", photoUrl: `https://i.imgur.com/aCyjHMk.png`, team: "Time B", overall: 88 }, playersRawData.moreno),
-    createPlayerFromSeriesHistory({ id: 7, name: "RAFARINHA", photoUrl: `https://i.imgur.com/8A4gjDE.png`, team: "Time B", overall: 93 }, playersRawData.RAFARINHA),
-    createPlayerFromSeriesHistory({ id: 8, name: "HnRq", photoUrl: `https://i.imgur.com/toZ71Ty.png`, team: "Time B", overall: 82 }, playersRawData.HnRq),
-    createPlayerFromSeriesHistory({ id: 9, name: "Mateuus", photoUrl: `https://i.imgur.com/Bzbl7Al.png`, team: "Time B", overall: 86 }, playersRawData.Mateuus),
-    createPlayerFromSeriesHistory({ id: 10, name: "heroo", photoUrl: `https://i.imgur.com/xPVVrf8.png`, team: "Time B", overall: 65 }, playersRawData.heroo),
+    createPlayerFromSeriesHistory({ id: 7, name: "RAFARINHA", photoUrl: `https://i.imgur.com/8A4gjDE.png`, team: "Time B", overall: 89 }, playersRawData.RAFARINHA),
+    createPlayerFromSeriesHistory({ id: 8, name: "HnRq", photoUrl: `https://i.imgur.com/toZ71Ty.png`, team: "Time B", overall: 84 }, playersRawData.HnRq),
+    createPlayerFromSeriesHistory({ id: 9, name: "Mateuus", photoUrl: `https://i.imgur.com/Bzbl7Al.png`, team: "Time B", overall: 87 }, playersRawData.Mateuus),
+    createPlayerFromSeriesHistory({ id: 10, name: "heroo", photoUrl: `https://i.imgur.com/xPVVrf8.png`, team: "Time B", overall: 66 }, playersRawData.heroo),
     createPlayerFromSeriesHistory({ id: 12, name: "Pedrones", photoUrl: `https://i.imgur.com/JotZTU7.png`, team: "Time B", overall: 91, status: 'banned' }, playersRawData.Pedrones),
     createPlayerFromSeriesHistory({ id: 13, name: "Lucas", photoUrl: `https://i.imgur.com/xE5pMH6.png`, team: "Time A", overall: 77 }, playersRawData.Lucas),
     createPlayerFromSeriesHistory({ id: 14, name: "vice", photoUrl: `https://i.imgur.com/yxwreiV.png`, team: "Time B", overall: 81 }, playersRawData.vice),
-    createPlayerFromSeriesHistory({ id: 15, name: "Bernabe", photoUrl: `https://i.imgur.com/H2ahLwW.png`, team: "Time A", overall: 64 }, playersRawData.Bernabe),
+    createPlayerFromSeriesHistory({ id: 15, name: "Bernabe", photoUrl: `https://i.imgur.com/H2ahLwW.png`, team: "Time A", overall: 63 }, playersRawData.Bernabe),
     // Regular Players
-    createPlayerFromSeriesHistory({ id: 17, name: "VDD", photoUrl: `https://i.imgur.com/c3eN5qe.png`, team: "Time C", overall: 80 }, playersRawData.VDD),
+    createPlayerFromSeriesHistory({ id: 17, name: "VDD", photoUrl: `https://i.imgur.com/c3eN5qe.png`, team: "Time C", overall: 82 }, playersRawData.VDD),
     createPlayerFromSeriesHistory({ id: 18, name: "Hiagod", photoUrl: `https://i.imgur.com/ZarH4ch.png`, team: "Time C", overall: 78 }, playersRawData.Hiagod),
     createPlayerFromSeriesHistory({ id: 19, name: "Ratão", photoUrl: `https://i.imgur.com/Vag7gaK.png`, team: "Time C", overall: 73 }, playersRawData.Ratao),
     createPlayerFromSeriesHistory({ id: 23, name: "Pimentel", photoUrl: `https://i.imgur.com/pgl60w5.png`, team: "Time C", overall: 74 }, playersRawData.Pimentel),

@@ -5,8 +5,11 @@ import PlayerCardSmall from './PlayerCardSmall';
 import UsersIcon from './icons/UsersIcon';
 import StarIcon from './icons/StarIcon';
 import CoinIcon from './icons/CoinIcon';
+import MapVeto, { VetoResult } from './MapVeto';
+import { MAP_IMAGES, SIDE_LOGOS } from '../constants';
 
-type DraftStep = 'PLAYER_SELECTION' | 'CAPTAIN_SELECTION' | 'COIN_FLIP' | 'DRAFTING' | 'SUMMARY';
+type MatchFormat = 'md1' | 'md2' | 'md3' | 'md5';
+type DraftStep = 'FORMAT_SELECTION' |'PLAYER_SELECTION' | 'CAPTAIN_SELECTION' | 'COIN_FLIP' | 'DRAFTING' | 'SUMMARY';
 
 interface TeamDraftProps {
     allPlayers: Player[];
@@ -14,7 +17,8 @@ interface TeamDraftProps {
 }
 
 const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
-    const [step, setStep] = useState<DraftStep>('PLAYER_SELECTION');
+    const [step, setStep] = useState<DraftStep>('FORMAT_SELECTION');
+    const [matchFormat, setMatchFormat] = useState<MatchFormat>('md1');
     const [draftPool, setDraftPool] = useState<Player[]>([]);
     const [captains, setCaptains] = useState<[Player | null, Player | null]>([null, null]);
     const [teamA, setTeamA] = useState<Player[]>([]);
@@ -22,8 +26,10 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
     const [coinFlipWinner, setCoinFlipWinner] = useState<Player | null>(null);
     const [isCoinFlipping, setIsCoinFlipping] = useState(false);
     const [currentPickerIndex, setCurrentPickerIndex] = useState(0);
+    const [summaryView, setSummaryView] = useState<'teams' | 'veto' | 'final'>('teams');
+    const [finalMaps, setFinalMaps] = useState<VetoResult[]>([]);
 
-    const availablePlayers = useMemo(() => allPlayers.filter(p => p.status !== 'banned'), [allPlayers]);
+    const availablePlayers = useMemo(() => allPlayers.filter(p => p.status !== 'banned' && p.status !== 'stand-in'), [allPlayers]);
     const remainingPlayers = useMemo(() => {
         const teamAPlayerIds = new Set(teamA.map(p => p.id));
         const teamBPlayerIds = new Set(teamB.map(p => p.id));
@@ -71,7 +77,7 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
         if (!captains[0] || !captains[1]) return;
         setIsCoinFlipping(true);
         setTimeout(() => {
-            const winner = Math.random() < 0.5 ? captains[0] : captains[1];
+            const winner = Math.random() < 0.5 ? captains[0]! : captains[1]!;
             setCoinFlipWinner(winner);
             setIsCoinFlipping(false);
         }, 1500);
@@ -100,19 +106,49 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
             setStep('SUMMARY');
         }
     };
-    
+
     const resetDraft = () => {
-        setStep('PLAYER_SELECTION');
+        setStep('FORMAT_SELECTION');
+        setMatchFormat('md1');
         setDraftPool([]);
         setCaptains([null, null]);
         setTeamA([]);
         setTeamB([]);
         setCoinFlipWinner(null);
         setCurrentPickerIndex(0);
+        setSummaryView('teams');
+        setFinalMaps([]);
     };
 
     const renderStepContent = () => {
         switch (step) {
+            case 'FORMAT_SELECTION':
+                return (
+                    <div className="text-center flex flex-col items-center justify-center h-full">
+                        <h3 className="text-2xl font-semibold mb-6">Selecione o Formato da Partida</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            {(['md1', 'md2', 'md3', 'md5'] as MatchFormat[]).map(format => (
+                                <button
+                                    key={format}
+                                    onClick={() => setMatchFormat(format)}
+                                    className={`px-6 py-3 rounded-lg font-bold text-lg border-2 transition-all ${
+                                        matchFormat === format
+                                        ? 'bg-orange-500 border-orange-400 text-white'
+                                        : 'bg-gray-700 border-gray-600 hover:border-orange-500'
+                                    }`}
+                                >
+                                    {format.replace('md', 'MD').replace('1', '1')}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            onClick={() => setStep('PLAYER_SELECTION')}
+                            className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg"
+                        >
+                            Confirmar Formato
+                        </button>
+                    </div>
+                );
             case 'PLAYER_SELECTION':
                 return (
                     <div>
@@ -127,7 +163,7 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
                                 />
                             ))}
                         </div>
-                        <div className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm p-4 flex justify-center items-center gap-4">
+                        <div className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm p-4 flex justify-center items-center gap-4 z-20">
                             <p className="font-bold text-lg">{draftPool.length} / 10 selecionados</p>
                             <button 
                                 onClick={() => setStep('CAPTAIN_SELECTION')}
@@ -153,7 +189,7 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
                                 />
                             ))}
                         </div>
-                        <div className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm p-4 flex justify-center items-center gap-4">
+                        <div className="fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm p-4 flex justify-center items-center gap-4 z-20">
                             <p className="font-bold text-lg">{captains.filter(c => c).length} / 2 selecionados</p>
                             <button 
                                 onClick={() => setStep('COIN_FLIP')}
@@ -205,8 +241,7 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
                         <div className="text-center mb-4 p-3 bg-gray-800 rounded-lg">
                             <h3 className="text-xl font-bold">Vez de <span className="text-orange-400">{picker?.name}</span></h3>
                         </div>
-                        <div className="grid grid-cols-3 gap-6 flex-grow">
-                            {/* Team A */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
                             <div className={`p-4 rounded-lg border-2 ${picker?.id === teamA[0]?.id ? 'border-orange-500' : 'border-gray-700'}`}>
                                 <h4 className="text-lg font-bold text-center mb-3">Time de {teamA[0]?.name}</h4>
                                 <div className="space-y-3">
@@ -214,14 +249,12 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
                                     {Array(5 - teamA.length).fill(0).map((_, i) => <div key={i} className="h-16 bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-600"></div>)}
                                 </div>
                             </div>
-                            {/* Player Pool */}
                             <div className="p-4 rounded-lg border-2 border-gray-700">
                                 <h4 className="text-lg font-bold text-center mb-3">Jogadores Disponíveis</h4>
                                 <div className="space-y-3">
                                     {remainingPlayers.map(p => <PlayerCardSmall key={p.id} player={p} onClick={handleDraftPick} />)}
                                 </div>
                             </div>
-                            {/* Team B */}
                              <div className={`p-4 rounded-lg border-2 ${picker?.id === teamB[0]?.id ? 'border-orange-500' : 'border-gray-700'}`}>
                                 <h4 className="text-lg font-bold text-center mb-3">Time de {teamB[0]?.name}</h4>
                                 <div className="space-y-3">
@@ -235,27 +268,105 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
             case 'SUMMARY':
                  return (
                     <div className="text-center">
-                        <h3 className="text-2xl font-semibold mb-6">Times Formados!</h3>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                             <div className="p-4 rounded-lg border-2 border-gray-700">
-                                <h4 className="text-xl font-bold text-center mb-3 text-orange-400">Time de {teamA[0]?.name}</h4>
-                                <div className="space-y-4">
-                                     {teamA.map(p => <PlayerCard key={p.id} player={p} isSelected={false} isDisabled={true} onSelect={()=>{}} onViewDetails={onViewDetails} hideActions={true} />)}
+                        {summaryView === 'teams' && (
+                            <>
+                                <h3 className="text-2xl font-semibold mb-6">Times Formados!</h3>
+                                <div className="flex flex-col gap-8 mb-8">
+                                    <div className="p-4 rounded-lg border-2 border-gray-700">
+                                        <h4 className="text-xl font-bold text-center mb-3 text-orange-400">Time de {teamA[0]?.name}</h4>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                            {teamA.map(p => <PlayerCard key={p.id} player={p} isSelected={false} isDisabled={true} onSelect={()=>{}} onViewDetails={onViewDetails} hideActions={true} />)}
+                                        </div>
+                                    </div>
+                                    <div className="p-4 rounded-lg border-2 border-gray-700">
+                                        <h4 className="text-xl font-bold text-center mb-3 text-orange-400">Time de {teamB[0]?.name}</h4>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                            {teamB.map(p => <PlayerCard key={p.id} player={p} isSelected={false} isDisabled={true} onSelect={()=>{}} onViewDetails={onViewDetails} hideActions={true} />)}
+                                        </div>
+                                    </div>
                                 </div>
-                             </div>
-                              <div className="p-4 rounded-lg border-2 border-gray-700">
-                                <h4 className="text-xl font-bold text-center mb-3 text-orange-400">Time de {teamB[0]?.name}</h4>
-                                <div className="space-y-4">
-                                     {teamB.map(p => <PlayerCard key={p.id} player={p} isSelected={false} isDisabled={true} onSelect={()=>{}} onViewDetails={onViewDetails} hideActions={true} />)}
+                                <button onClick={() => setSummaryView('veto')} className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg">
+                                    Iniciar Veto de Mapas
+                                </button>
+                            </>
+                        )}
+                        {summaryView === 'veto' && captains[0] && captains[1] && coinFlipWinner && (
+                            <MapVeto 
+                                teamA={teamA} 
+                                teamB={teamB}
+                                matchFormat={matchFormat}
+                                captains={[captains[0], captains[1]]}
+                                coinFlipWinner={coinFlipWinner}
+                                onVetoComplete={(maps) => {
+                                    setFinalMaps(maps);
+                                    setSummaryView('final');
+                                }}
+                            />
+                        )}
+                        {summaryView === 'final' && (
+                             <>
+                                <h3 className="text-2xl font-semibold mb-6">Draft Finalizado!</h3>
+                                <div className="mb-8 p-4 bg-gray-800 rounded-lg max-w-4xl mx-auto">
+                                    <h4 className="text-xl font-bold mb-4 text-orange-400">Mapas da Partida</h4>
+                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {finalMaps.map(mapInfo => {
+                                            const isDecider = !mapInfo.pickedBy && (matchFormat === 'md3' || matchFormat === 'md5');
+                                            const opponent = captains.find(c => c?.id !== mapInfo.pickedBy?.id);
+                                            return (
+                                                <div key={mapInfo.map} className="bg-gray-700 rounded-lg overflow-hidden text-center border-2 border-gray-600">
+                                                    <div 
+                                                        className="h-24 bg-cover bg-center flex items-center justify-center"
+                                                        style={{ backgroundImage: `linear-gradient(rgba(10,10,10,0.6), rgba(10,10,10,0.6)), url(${MAP_IMAGES[mapInfo.map]})` }}
+                                                    >
+                                                        <h5 className="text-2xl font-bold text-white uppercase tracking-wider" style={{ textShadow: '2px 2px 4px black' }}>{mapInfo.map}</h5>
+                                                    </div>
+                                                    <div className="p-3 text-sm h-24 flex flex-col justify-center">
+                                                        {isDecider ? (
+                                                            <p className="font-bold text-yellow-400 text-lg">DECIDER</p>
+                                                        ) : mapInfo.pickedBy ? (
+                                                            <>
+                                                                <p className="text-gray-400">Escolhido por:</p>
+                                                                <p className="font-bold">{mapInfo.pickedBy.name}</p>
+                                                                {mapInfo.side && opponent && (
+                                                                    <div className="flex items-center justify-center mt-2 text-gray-400">
+                                                                        <p>Lado para {opponent.name}:</p>
+                                                                        <img src={SIDE_LOGOS[mapInfo.side]} alt={mapInfo.side} className="w-6 h-6 ml-2"/>
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        ) : (
+                                                            <p className="font-bold text-green-400">JOGADO</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
-                             </div>
-                         </div>
+                                
+                               <div className="flex flex-col gap-8">
+                                    <div className="p-4 rounded-lg border-2 border-gray-700">
+                                        <h4 className="text-xl font-bold text-center mb-3 text-orange-400">Time de {teamA[0]?.name}</h4>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                            {teamA.map(p => <PlayerCard key={p.id} player={p} isSelected={false} isDisabled={true} onSelect={()=>{}} onViewDetails={onViewDetails} hideActions={true} />)}
+                                        </div>
+                                    </div>
+                                    <div className="p-4 rounded-lg border-2 border-gray-700">
+                                        <h4 className="text-xl font-bold text-center mb-3 text-orange-400">Time de {teamB[0]?.name}</h4>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                            {teamB.map(p => <PlayerCard key={p.id} player={p} isSelected={false} isDisabled={true} onSelect={()=>{}} onViewDetails={onViewDetails} hideActions={true} />)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 );
         }
     };
 
     const steps = [
+        { key: 'FORMAT_SELECTION', label: 'Formato', icon: <span>MDX</span>},
         { key: 'PLAYER_SELECTION', label: 'Jogadores', icon: <UsersIcon className="w-5 h-5"/> },
         { key: 'CAPTAIN_SELECTION', label: 'Capitães', icon: <StarIcon className="w-5 h-5"/> },
         { key: 'COIN_FLIP', label: 'Sorteio', icon: <CoinIcon className="w-5 h-5"/> },
@@ -277,8 +388,8 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
              <div className="mb-8 flex justify-center items-center gap-2 sm:gap-4">
                 {steps.map((s, index) => s.icon && (
                     <React.Fragment key={s.key}>
-                        <div className="flex flex-col items-center text-center">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300
+                        <div className="flex flex-col items-center text-center w-16">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 font-bold
                                 ${index <= currentStepIndex ? 'bg-orange-500 border-orange-400 text-white' : 'bg-gray-700 border-gray-600 text-gray-400'}`}>
                                 {s.icon}
                             </div>
