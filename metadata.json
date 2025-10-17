@@ -1,0 +1,5 @@
+{
+  "name": "Cartola do Mix Abençoado",
+  "description": "Um aplicativo de fantasy no estilo Cartola para partidas de Counter-Strike, permitindo aos usuários montar um time com um orçamento definido e competir com base no desempenho dos jogadores.",
+  "requestFramePermissions": []
+}
