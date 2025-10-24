@@ -13,7 +13,8 @@ interface PlayerCardProps {
 
 const getTierStyles = (overall: number, status?: string) => {
     if (status === 'banned') return {
-        statsStyle: { backgroundColor: '#4A5568' },
+        cardStyle: { backgroundColor: '#111827' }, // bg-gray-900
+        statsStyle: { backgroundColor: '#4A5568', backgroundSize: 'cover', backgroundPosition: 'center' },
         overallText: 'text-gray-400',
         nameText: 'text-gray-300',
         lastPointsText: 'text-gray-400',
@@ -25,31 +26,82 @@ const getTierStyles = (overall: number, status?: string) => {
         nameText: 'text-white',
     };
 
-    if (overall >= 90) return { // Blue
+    if (overall >= 95) return { // Emerald Tier
+        overallText: 'text-green-900',
+        nameText: 'text-green-900',
+        cardStyle: {
+            backgroundImage: `url(https://i.imgur.com/VBfis5e.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundBlendMode: 'overlay',
+        },
+        statsStyle: {
+            backgroundImage: `url(https://i.imgur.com/08x0mOv.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+        },
+        lastPointsText: 'text-emerald-700',
+        statsTextColor: 'text-gray-800'
+    };
+
+    if (overall >= 90) return { // Reddish with background
         ...commonStyles,
-        statsStyle: { backgroundColor: '#172052' },
+        cardStyle: { 
+            backgroundColor: '#4c1d14',
+            backgroundImage: `url(https://i.imgur.com/xVvF4BV.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundBlendMode: 'overlay',
+        },
+        statsStyle: { backgroundColor: '#2a0f0a', backgroundImage: `url(https://i.imgur.com/mfasmlM.png)`, backgroundSize: 'cover', backgroundPosition: 'center' },
+        lastPointsText: 'text-red-300',
+        statsTextColor: 'text-white'
+    };
+    if (overall >= 85) return { // Blue
+        ...commonStyles,
+        cardStyle: { 
+            backgroundImage: `url(https://i.imgur.com/GsY510Z.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundBlendMode: 'overlay',
+        },
+        statsStyle: { backgroundColor: '#172052', backgroundImage: `url(https://i.imgur.com/fHmj94z.png)`, backgroundSize: 'cover', backgroundPosition: 'center' },
         lastPointsText: 'text-sky-300',
         statsTextColor: 'text-white'
     };
     if (overall >= 80) return { // Gold
         ...commonStyles,
-        statsStyle: { backgroundColor: '#fbd470' },
+        cardStyle: { 
+            backgroundImage: `url(https://i.imgur.com/6taPM0o.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundBlendMode: 'overlay',
+        },
+        statsStyle: { backgroundColor: '#fbd470', backgroundImage: `url(https://i.imgur.com/VBBCDG1.png)`, backgroundSize: 'cover', backgroundPosition: 'center' },
         lastPointsText: 'text-amber-900',
         statsTextColor: 'text-gray-900'
     };
     if (overall >= 70) return { // Silver
         ...commonStyles,
-        statsStyle: { backgroundColor: '#d2d2d2' },
+        cardStyle: { 
+            backgroundImage: `url(https://i.imgur.com/cyMl8rr.png)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundBlendMode: 'overlay',
+        },
+        statsStyle: { backgroundColor: '#d2d2d2', backgroundImage: `url(https://i.imgur.com/tgiR8xs.png)`, backgroundSize: 'cover', backgroundPosition: 'center' },
         lastPointsText: 'text-gray-700',
         statsTextColor: 'text-gray-800'
     };
     return { // Bronze
         ...commonStyles,
-        statsStyle: { backgroundColor: '#ad7350' },
+        cardStyle: { backgroundColor: '#b67e61' },
+        statsStyle: { backgroundColor: '#ad7350', backgroundImage: `url(https://i.imgur.com/uDFMp8x.png)`, backgroundSize: 'cover', backgroundPosition: 'center' },
         lastPointsText: 'text-orange-200',
         statsTextColor: 'text-white'
     };
 }
+
 
 const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled, onSelect, onViewDetails, isExportView = false, hideActions = false }) => {
     
@@ -58,13 +110,16 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled,
         onSelect(player);
     };
 
-    const { statsStyle, overallText, nameText, lastPointsText, statsTextColor } = getTierStyles(player.overall, player.status);
-    const textShadow = { textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' };
+    const { cardStyle, statsStyle, overallText, nameText, lastPointsText, statsTextColor } = getTierStyles(player.overall, player.status);
+    const textShadow = player.overall >= 95 
+        ? { textShadow: '1px 1px 2px rgba(0, 0, 0, 0.25)' } 
+        : { textShadow: '2px 2px 4px rgba(0, 0, 0, 0.9)' };
 
     return (
         <div 
             onClick={() => !isExportView && player.status !== 'banned' && onViewDetails(player)}
-            className={`relative rounded-2xl w-full mx-auto transition-all duration-300 overflow-hidden bg-gray-900 flex flex-col shadow-lg
+            style={cardStyle}
+            className={`relative rounded-2xl w-full mx-auto transition-all duration-300 overflow-hidden flex flex-col shadow-lg
             ${!isExportView && player.status !== 'banned' ? 'cursor-pointer hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20' : ''}
             ${isSelected && !isExportView ? 'ring-4 ring-offset-2 ring-offset-black ring-green-500' : ''}`}
         >
@@ -76,11 +131,10 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled,
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 
                 <div className="relative z-10 p-3 h-full flex flex-col justify-between text-white">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-end items-start">
                         <p className={`font-black text-4xl ${overallText}`} style={textShadow}>
                             {player.overall}
                         </p>
-                        <img className="w-10 h-10 object-cover rounded-full border-2 border-white/30" src="https://i.imgur.com/gB8hCgB.png" alt="Team Logo" />
                     </div>
                     <div>
                         <h3 className={`text-xl font-extrabold tracking-wide uppercase ${nameText}`} style={textShadow}>
@@ -91,9 +145,11 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, isSelected, isDisabled,
             </div>
 
             {/* STATS & BUTTON SECTION */}
-            <div style={statsStyle} className="p-4 flex-grow flex flex-col justify-between">
+            <div style={statsStyle} 
+                className="p-4 flex-grow flex flex-col justify-between"
+            >
                 <div className={`flex flex-col space-y-2 text-sm ${statsTextColor}`}>
-                     <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center">
                         <span className="opacity-80">KDA Total</span>
                         <span className="font-bold text-sm">{`${player.totalKills}/${player.totalDeaths}/${player.totalAssists}`}</span>
                     </div>

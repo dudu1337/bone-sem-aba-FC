@@ -29,7 +29,6 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
     const [summaryView, setSummaryView] = useState<'teams' | 'veto' | 'final'>('teams');
     const [finalMaps, setFinalMaps] = useState<VetoResult[]>([]);
 
-
     const availablePlayers = useMemo(() => allPlayers.filter(p => p.status !== 'banned' && p.status !== 'stand-in'), [allPlayers]);
     const remainingPlayers = useMemo(() => {
         const teamAPlayerIds = new Set(teamA.map(p => p.id));
@@ -107,7 +106,7 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
             setStep('SUMMARY');
         }
     };
-    
+
     const resetDraft = () => {
         setStep('FORMAT_SELECTION');
         setMatchFormat('md1');
@@ -344,6 +343,7 @@ const TeamDraft: React.FC<TeamDraftProps> = ({ allPlayers, onViewDetails }) => {
                                         })}
                                     </div>
                                 </div>
+                                
                                <div className="flex flex-col gap-8">
                                     <div className="p-4 rounded-lg border-2 border-gray-700">
                                         <h4 className="text-xl font-bold text-center mb-3 text-orange-400">Time de {teamA[0]?.name}</h4>

@@ -12,11 +12,14 @@ import ExportableImage from './components/ExportableImage';
 import MatchHistory from './components/MatchHistory';
 import Collection from './components/Collection';
 import TeamDraft from './components/TeamDraft';
+import HallOfFame from './components/HallOfFame';
+import RatingHistory from './components/RatingHistory';
+import MapSpecialists from './components/MapSpecialists';
 
 const LOCAL_STORAGE_KEY = 'cartolaMixAbençoado';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'market' | 'history' | 'collection' | 'draft'>('market');
+  const [activeTab, setActiveTab] = useState<'cartola' | 'history' | 'collection' | 'draft' | 'hallOfFame' | 'ratingHistory' | 'mapSpecialists'>('collection');
   const [selectedTeam, setSelectedTeam] = useState<Player[]>([]);
   const [patrimony, setPatrimony] = useState<number>(INITIAL_BUDGET);
   const [roundPoints, setRoundPoints] = useState<number>(0);
@@ -142,30 +145,10 @@ const App: React.FC = () => {
       
       <div className="container mx-auto max-w-screen-2xl mt-8">
         {/* Tab Navigation */}
-        <div className="flex justify-center border-b border-gray-700 mb-6">
+        <div className="flex justify-center border-b border-gray-700 mb-6 overflow-x-auto">
           <button
-            onClick={() => setActiveTab('market')}
-            className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
-              activeTab === 'market'
-                ? 'border-b-2 border-orange-500 text-orange-400'
-                : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Mercado
-          </button>
-          <button
-            onClick={() => setActiveTab('history')}
-            className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
-              activeTab === 'history'
-                ? 'border-b-2 border-orange-500 text-orange-400'
-                : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Histórico
-          </button>
-           <button
             onClick={() => setActiveTab('collection')}
-            className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
               activeTab === 'collection'
                 ? 'border-b-2 border-orange-500 text-orange-400'
                 : 'text-gray-400 hover:text-white'
@@ -173,9 +156,9 @@ const App: React.FC = () => {
           >
             Coleção
           </button>
-           <button
+          <button
             onClick={() => setActiveTab('draft')}
-            className={`px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
               activeTab === 'draft'
                 ? 'border-b-2 border-orange-500 text-orange-400'
                 : 'text-gray-400 hover:text-white'
@@ -183,9 +166,86 @@ const App: React.FC = () => {
           >
             Bater Times
           </button>
+           <button
+            onClick={() => setActiveTab('history')}
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+              activeTab === 'history'
+                ? 'border-b-2 border-orange-500 text-orange-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Histórico de Partidas
+          </button>
+            <button
+            onClick={() => setActiveTab('ratingHistory')}
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+              activeTab === 'ratingHistory'
+                ? 'border-b-2 border-orange-500 text-orange-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Histórico de Ratings
+          </button>
+          <button
+            onClick={() => setActiveTab('hallOfFame')}
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+              activeTab === 'hallOfFame'
+                ? 'border-b-2 border-orange-500 text-orange-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Hall da Fama
+          </button>
+          <button
+            onClick={() => setActiveTab('mapSpecialists')}
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+              activeTab === 'mapSpecialists'
+                ? 'border-b-2 border-orange-500 text-orange-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Melhores por Mapa
+          </button>
+           <button
+            onClick={() => setActiveTab('cartola')}
+            className={`flex-shrink-0 px-6 py-3 text-sm font-medium uppercase tracking-wider transition-colors duration-200 ${
+              activeTab === 'cartola'
+                ? 'border-b-2 border-orange-500 text-orange-400'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Cartola
+          </button>
         </div>
 
-        {activeTab === 'market' && (
+        {activeTab === 'collection' && (
+            <main>
+                <h2 className="text-2xl font-bold text-gray-300 mb-4">Coleção de Jogadores</h2>
+                <Collection 
+                    players={PLAYERS_DATA}
+                    onViewDetails={handleViewDetails}
+                />
+            </main>
+        )}
+
+        {activeTab === 'draft' && (
+          <main>
+            <TeamDraft 
+              allPlayers={PLAYERS_DATA} 
+              onViewDetails={handleViewDetails} 
+            />
+          </main>
+        )}
+        
+        {activeTab === 'history' && <MatchHistory />}
+
+        {activeTab === 'ratingHistory' && <RatingHistory players={PLAYERS_DATA} onViewDetails={handleViewDetails} />}
+
+        {activeTab === 'hallOfFame' && <HallOfFame onViewDetails={handleViewDetails} />}
+
+        {activeTab === 'mapSpecialists' && <MapSpecialists players={PLAYERS_DATA} onViewDetails={handleViewDetails} />}
+        
+        {activeTab === 'cartola' && (
           <main>
             <div className="mb-8">
               <div className="mb-4">
@@ -215,26 +275,6 @@ const App: React.FC = () => {
           </main>
         )}
 
-        {activeTab === 'history' && <MatchHistory />}
-        
-        {activeTab === 'collection' && (
-            <main>
-                <h2 className="text-2xl font-bold text-gray-300 mb-4">Coleção de Jogadores</h2>
-                <Collection 
-                    players={PLAYERS_DATA}
-                    onViewDetails={handleViewDetails}
-                />
-            </main>
-        )}
-
-        {activeTab === 'draft' && (
-          <main>
-            <TeamDraft 
-              allPlayers={PLAYERS_DATA} 
-              onViewDetails={handleViewDetails} 
-            />
-          </main>
-        )}
       </div>
 
       <PlayerDetailModal player={viewingPlayer} onClose={handleCloseModal} />

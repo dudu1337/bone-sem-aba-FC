@@ -63,10 +63,10 @@ const PlayerDetailModal: React.FC<PlayerDetailModalProps> = ({ player, onClose }
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 text-center my-4">
               <div className="bg-gray-800 p-3 rounded-lg"><div className="text-xs text-gray-400">Preço</div><div className="text-xl font-bold text-green-400">${player.price.toFixed(2)}</div></div>
-              <div className="bg-gray-800 p-3 rounded-lg"><div className="text-xs text-gray-400">KDA Total</div><div className="text-xl font-bold">{`${player.totalKills}/${player.totalDeaths}/${player.totalAssists}`}</div></div>
               <div className="bg-gray-800 p-3 rounded-lg"><div className="text-xs text-gray-400">K/D Ratio</div><div className="text-xl font-bold">{player.kdRatio.toFixed(2)}</div></div>
               <div className="bg-gray-800 p-3 rounded-lg"><div className="text-xs text-gray-400">HS% Médio</div><div className="text-xl font-bold">{player.avgHeadshotPercentage}%</div></div>
               <div className="bg-gray-800 p-3 rounded-lg"><div className="text-xs text-gray-400">Pontos (Série)</div><div className="text-xl font-bold text-orange-400">{player.lastMatchPoints.toFixed(2)}</div></div>
+              <div className="bg-gray-800 p-3 rounded-lg"><div className="text-xs text-gray-400">KDA Total</div><div className="text-xl font-bold">{`${player.totalKills}/${player.totalDeaths}/${player.totalAssists}`}</div></div>
             </div>
         </div>
         
@@ -88,7 +88,7 @@ const PlayerDetailModal: React.FC<PlayerDetailModalProps> = ({ player, onClose }
                             >
                             <div className="flex justify-between items-center">
                                 <div>
-                                <p className="font-bold">{match.map} - <span className={match.won ? 'text-green-400' : 'text-red-400'}>{match.won ? 'Vitória' : 'Derrota'}</span></p>
+                                <p className="font-bold">{match.map} - <span className={match.isTie ? 'text-yellow-400' : match.won ? 'text-green-400' : 'text-red-400'}>{match.isTie ? 'Empate' : match.won ? 'Vitória' : 'Derrota'}</span></p>
                                 <p className="text-sm text-gray-400">Placar: {match.team1Score} x {match.team2Score}</p>
                                 </div>
                                 <div className="text-right">

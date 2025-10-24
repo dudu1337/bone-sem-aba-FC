@@ -9,12 +9,18 @@ export interface Match {
   headshotPercentage: number;
   points: number;
   won: boolean;
+  isTie?: boolean;
 }
 
 export interface Series {
   id: string;
   title: string; // Changed from date to title
   matches: Match[];
+}
+
+export interface RatingHistory {
+  date: string;
+  overall: number;
 }
 
 export interface Player {
@@ -34,6 +40,7 @@ export interface Player {
   winRate: number;
   status?: 'active' | 'banned' | 'stand-in';
   winRateByMap: { [mapName: string]: number };
+  ratingHistory: RatingHistory[];
 }
 
 export interface SavedData {
@@ -49,6 +56,7 @@ export interface MatchPlayerPerformance {
   deaths: number;
   assists: number;
   points: number;
+  isMvp?: boolean;
 }
 
 export interface HistoryMatch {
